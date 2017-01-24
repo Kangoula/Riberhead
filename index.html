@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+  <title>Headtracker</title>
+  <script src="headtrackr.js"></script>
+</head>
+<body>
+  <canvas id="inputCanvas" width="320" height="240"></canvas>
+  <video id="inputVideo" autoplay loop style="display:none"></video>
+  <br />
+  <button onclick="snap();">take snapshot</button>
+  <br />
+  <img src="" id="img">
+  <script type="text/javascript">
+  var video = document.getElementById('inputVideo');
+  var canvas = document.getElementById('inputCanvas');
+  var image = document.getElementById('img');
+  var mask = new Image();
+  mask.src = "mask.png";
+
+  var htracker = new headtrackr.Tracker();
+  htracker.init(video, canvas);
+  htracker.start();
+
+  document.addEventListener('headtrackrStatus',
+  function (event) {
+    if (event.status == "found") {
+      var ctx = canvas.getContext('2d');
+
+      document.addEventListener('facetrackingEvent',
+      function(event){
+
+        var rect = {
+          x: (event.x - event.width/2),
+          y: (event.y - event.height/2),
+          width: event.width,
+          height: event.height
+        };
+        ctx.drawImage(mask, rect.x-5, rect.y-5, rect.width*1.2, rect.height);
+
+      });
+
+    }
+  });
+
+  function snap(){
+    image.src = canvas.toDataURL('png')
+  }
+  </script>
+</body>
+</html>
